@@ -3,14 +3,16 @@ import mongoose from "mongoose";
 import videoRoutes from './routes/videoRoutes.js';
 import userRoutes from "./routes/userRoutes.js";
 import userProgressRoute from "./routes/userProgressRoutes.js";
+import cors from 'cors';
 import 'dotenv/config'; 
 
 const app = express(); 
 
+app.use(cors())
 app.use(express.json()); 
 app.use('/api/videos', videoRoutes); 
-app.use('/api/user', userRoutes);
-app.use('/api/user-progress',userProgressRoute);
+app.use('/api/user', userRoutes); 
+app.use('/api/user-progress',userProgressRoute); 
 
 const port = process.env.PORT || 6969;
 app.listen(port, () => {

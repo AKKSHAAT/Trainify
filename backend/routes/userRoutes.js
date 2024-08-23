@@ -5,7 +5,19 @@ import { User } from '../models/userModel.js'; // Assuming 'User' is the default
 
 const router = express.Router();
 
+// ----------------------------------------------------------------------------
+// const authHeader = req.headers['authorization'];
+
+// axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/protected-endpoint`, {
+//   headers: {
+//     Authorization: `Bearer ${token}`
+//   }
+// })
+// ----------------------------------------------------------------------------
+
 router.post('/register', async (req, res) => {
+  console.log('in register');
+  
   const { username, phone, password } = req.body;
 
   if (!username || !phone || !password) {
@@ -43,6 +55,7 @@ router.post('/login',async (req,res)=>{
 
     try {
         const user = await User.findOne({ phone });
+        console.log(user);
         if (!user) {
           return res.status(400).json({ message: "Invalid credentials" });
         }
