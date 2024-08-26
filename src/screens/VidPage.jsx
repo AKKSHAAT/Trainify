@@ -1,35 +1,42 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { VideoPlayer } from '../components/VideoPlayer'
+import { VideoPlayer } from '../components/VideoPlayer';
+import { VideoList } from '../components/VideoList';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export const VidPage = () => {
-  const [video, setVideos] = useState([]); 
-  const [error, setError] = useState(null); 
-  const { id } = useParams(); 
+  const [video, setVideo] = useState({}); 
+  const [error, setError] = useState(null);
+  const { id } = useParams();
 
-  useEffect(()=>{
-      let res = axios.get(`${backendUrl}/api/videos/${id}`)
-          .then(res=>{
-              setVideos(res.data);
-          })
-          .catch(err=>{
-              setError(err.msg);
-          })
-  }, []);
-  
+  useEffect(() => {
+    axios
+      .get(`${backendUrl}/api/videos/${id}`)
+      .then((res) => {
+        setVideo(res.data);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }, [id]);
+
   return (
-    <>
-        <h1>
-          <span>
-            {video.order}
-          </span>
-            {video.title}
+    <div className="flex w-full h-full">
+      
+      <VideoList />
+      <div className="flex-1 p-4 ">
+        <h1 className=" text-2xl font-bold text-white mb-4">
+          <span>{video.order + ' '}</span>
+          {video.title}
         </h1>
         <VideoPlayer fileUrl={video.fileUrl} />
-        <p>{video.description}</p>
-    </>
-  )
-}
+        <div className='bg-[#232c3d] rounded-lg p-4 my-4'>
+          <h2 className='text-xl font-semibold text-white mb-2'>About</h2>
+          <p className="text-white text-lg font-normal">{video.description}</p>
+        </div>
+      </div>
+    </div>
+  );
+};

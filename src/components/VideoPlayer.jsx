@@ -9,7 +9,7 @@ export const VideoPlayer = ({fileUrl}) => {
 
   return (
     <> 
-        <video width="320" height="240" controls>
+        <video className='w-full rounded-xl border-2 border-[#293347]' controls>
               <source src={`/backend${fileUrl}`} type="video/mp4" />
               Your browser does not support the video tag.
         </video>

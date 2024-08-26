@@ -1,6 +1,8 @@
+import 'dotenv/config'; 
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { authMiddleware } from './middleware.js';
 import { User } from '../models/userModel.js'; // Assuming 'User' is the default export
 
 const router = express.Router();
@@ -13,7 +15,7 @@ const router = express.Router();
 //     Authorization: `Bearer ${token}`
 //   }
 // })
-// ----------------------------------------------------------------------------
+// ------ ----------------------------------------------------------------------
 
 router.post('/register', async (req, res) => {
   console.log('in register');
@@ -68,6 +70,7 @@ router.post('/login',async (req,res)=>{
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
             expiresIn: '1h'
         });
+        console.log(process.env.JWT_SECRET);
 
         res.status(200).json({ token, userId: user._id });
         
@@ -75,6 +78,30 @@ router.post('/login',async (req,res)=>{
         res.status(500).json({ message: err.message });
     }
 });
+
+router.get('/:userId', authMiddleware, (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Unauthorized access' });
+  }
+  console.log("genwin");
+  const {userId} = req.params;
+
+  const user = User.findOne({_id: userId})
+    .then(user => {
+      const userData = {
+        username: user.username,
+        phone: user.phone 
+      }
+      res.status(200).send(userData);
+    })
+    .catch(err=> {
+      res.status(500).send({messege: 'cant find you'});
+      console.log(err);
+    })
+  
+  
+  
+})
 
 
 

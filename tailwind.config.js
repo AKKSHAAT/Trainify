@@ -6,6 +6,9 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      'lara' : ["Hanken Grotesk", "sans-serif"]
+    }
   },
   plugins: [],
 };
