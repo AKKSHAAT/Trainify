@@ -59,7 +59,7 @@ router.post('/login',async (req,res)=>{
         const user = await User.findOne({ phone });
         console.log(user);
         if (!user) {
-          return res.status(400).json({ message: "Invalid credentials" });
+          return res.status(400).json({ message: "user not found" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -68,7 +68,7 @@ router.post('/login',async (req,res)=>{
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: '1h'
+            expiresIn: '4h'
         });
         console.log(process.env.JWT_SECRET);
 
