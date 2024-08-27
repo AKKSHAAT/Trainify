@@ -9,10 +9,16 @@ export const VideoPlayer = ({fileUrl}) => {
 
   return (
     <> 
-        <video className='w-full rounded-xl border-2 border-[#293347]' controls>
-              <source src={`/backend${fileUrl}`} type="video/mp4" />
+    {
+      <video
+            key={fileUrl} // Use fileUrl as key to force remount
+            className='w-full rounded-xl border-2 border-[#293347]'
+            controls
+          >
+              <source src={`${backendUrl}/api/videos/stream/${fileUrl}`} type="video/mp4" />
               Your browser does not support the video tag.
         </video>
+    }
     </>
   )
 }

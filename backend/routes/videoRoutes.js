@@ -1,17 +1,36 @@
 import express from 'express';
-import { Video } from '../models/videoModel.js';  
+import { readFileSync } from 'fs';
+import { dirname, resolve, join } from 'path';
+import { fileURLToPath } from 'url';
+import { Video } from '../models/videoModel.js';
 
-import {videos} from './db.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const baseDir = resolve(__dirname, '..');
+console.log("baseDir:", baseDir); 
+
 const router = express.Router();
-// GET /api/videos: Fetch the list of videos.
-// GET /api/videos/:id: Fetch a specific video by ID.
-// POST /api/progress: Save user progress.
-// GET /api/progress/:userId: Fetch progress for a specific user.
+
+router.get('/stream/:fileName', (req, res) => {
+  
+  const fileName = req.params.fileName;
+
+  const videoPath = join(baseDir, 'vodz', fileName);
+  console.log("Video path:", videoPath);
+
+  try {
+    const file = readFileSync(videoPath);
+    res.send(file);
+  } catch (error) {
+    console.error("Error reading video file:", error.message); // Improved error message
+    res.status(404).send("Video not found");
+  }
+});
 
 router.get('/', async (req, res) => {
   try {
     console.log("pingged");
-    
     const vids = await Video.find({});
     res.send(vids);   
   } catch (error) {
@@ -22,8 +41,10 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    const vids = await Video.findOne({_id:id});
-    res.send(vids);
+    const vid = await Video.findOne({_id:id});
+    console.log(vid);
+    
+    res.send(vid);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

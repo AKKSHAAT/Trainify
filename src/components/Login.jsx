@@ -50,7 +50,7 @@ export const Login = () => {
               value={formData.phone}
               onChange={handleChange}
               autoComplete="on"
-              className="w-full px-3 py-2 border rounded bg-gray-800 text-white" // Added dark background and white text
+              className="w-full px-3 py-2 border rounded bg-gray-800 text-white"
               required
             />
           </div>

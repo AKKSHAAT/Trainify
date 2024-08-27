@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom'; 
 import { VideoList } from './VideoList';
 import { Login } from './Login';
+import { Navbar } from './Navbar';
 
 export const Home = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -41,7 +42,8 @@ export const Home = () => {
   }, [navigate, backendUrl]); 
 
   return (
-    <>
+    <div className='h-full'>
+      <Navbar />
       {user ? (
         <div className='flex'>
           <VideoList />
@@ -62,6 +64,6 @@ export const Home = () => {
           <Login />
         </div>
       )}
-    </>
+    </div>
   );
 };
