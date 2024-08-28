@@ -22,6 +22,21 @@ export const VidPage = () => {
   const VideoPlayerOptions = {
     controls: true,
     responsive: true,
+    controlBar: {
+      children: [
+        'playToggle',
+        'currentTimeDisplay',
+        'timeDivider',
+        'durationDisplay',
+        'volumePanel',
+        'fullscreenToggle'
+      ],
+      volumePanel: {
+        inline: false,
+      },
+      fullscreenToggle: true,
+      // Optionally add more options for the control bar customization here
+    },
     sources: [
       {
         src: videoLink,
