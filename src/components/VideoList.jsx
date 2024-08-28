@@ -51,8 +51,8 @@ export const VideoList = () => {
                     <p>{video.description.slice(0, 40) + ' ...'}</p>
                     <p>{video.duration}s</p>
                     <p className="font-light">Video {video.order}</p>
-                    <p className="font-light text-red-500">
-                      Locked: Yes (Complete previous videos to unlock)
+                    <p className="font-meduim text-red-500">
+                      Locked: Complete previous videos to unlock
                     </p>
                   </div>
                 </div>
@@ -64,7 +64,6 @@ export const VideoList = () => {
                     <p>{video.duration}s</p>
                     <p className="font-light">Video {video.order}</p>
                     <p className="font-light">
-                      Locked: No
                     </p>
                   </div>
                 </Link>

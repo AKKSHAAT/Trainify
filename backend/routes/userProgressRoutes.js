@@ -68,7 +68,8 @@ router.post('/', async (req, res) => {
         },
         {
             $set: {
-                'videos.$.completed': completed
+                'videos.$.completed': completed,
+                'videos.$.progress': progress
             }
         }
     );
@@ -78,7 +79,7 @@ router.post('/', async (req, res) => {
         // If no progress is found or no modification occurred, create a new progress entry
         const newProgress = new UserProgress({
             userId,
-            videos: [{ videoId, completed }]
+            videos: [{ videoId, completed , progress}]
         });
 
         await newProgress.save()

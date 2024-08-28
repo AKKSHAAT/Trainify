@@ -80,6 +80,9 @@ export const Home = () => {
                   {" " + user.username}
                 </span>
               </h1>
+              <p className='pt-12 text-2xl font-bold text-white mb-4'>
+                Please select a video to start your training
+              </p>
             </div>
           </div>
         </div>

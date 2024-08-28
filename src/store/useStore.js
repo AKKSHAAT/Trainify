@@ -24,6 +24,20 @@ const useStore = create((set) => ({
       console.error('Error updating user progress:', err.message);
     }
   },
+
 }));
+
+const updateUserProgress = (videoId, updates) => {
+  set(state => {
+    const updatedVideos = state.userProgress.map(progress => {
+      if (progress.videoId === videoId) {
+        return { ...progress, ...updates };
+      }
+      return progress;
+    });
+    localStorage.setItem('userProgress', JSON.stringify(updatedVideos)); // Save updated progress to localStorage
+    return { userProgress: updatedVideos };
+  });
+};
 
 export default useStore;

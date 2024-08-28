@@ -16,7 +16,7 @@ export const VidPage = () => {
 
   const userProgress = useStore((state) => state.userProgress);
   const updateUserProgress = useStore((state) => state.updateVideoProgress);
-  const userId = useStore((state) => state.userData.id) || localStorage.getItem("userId"); // Assuming userId is stored in userData
+  const userId = useStore((state) => state.userData.id) || localStorage.getItem("userId");
 
   const playerRef = useRef(null);
   const VideoPlayerOptions = {
@@ -53,24 +53,63 @@ export const VidPage = () => {
   }, [video]);
 
   useEffect(() => {
-    // Function to check if the video is completed
+    const player = playerRef.current;
+    let intervalId;
+
+    const updateProgress = () => {
+      if (player) {
+        const currentTime = player.currentTime();
+        // Save progress in localStorage
+        localStorage.setItem('videoProgress', JSON.stringify({
+          videoId: video._id,
+          progress: currentTime,
+          completed: player.ended()
+        }));
+
+        // Update progress to backend
+        axios.post(`${backendUrl}/api/progress/`, {
+          userId,
+          videoId: video._id,
+          progress: currentTime,
+          completed: player.ended()
+        }).then(() => {
+          console.log('User progress updated');
+        }).catch((error) => {
+          console.error('Error updating user progress:', error);
+        });
+      }
+    };
+
+    if (player) {
+      intervalId = setInterval(updateProgress, 10000); // Update every 10 seconds
+
+      // Cleanup interval on unmount
+      return () => clearInterval(intervalId);
+    }
+  }, [video._id, userId]);
+
+  useEffect(() => {
+    // Function to check if the video is completed and update progress
     const checkCompletion = () => {
       if (playerRef.current) {
         const player = playerRef.current;
         player.on('ended', async () => {
-          // Find progress for the current video
+          const currentTime = player.currentTime();
           const progress = userProgress.find((p) => p.videoId === video._id);
-
+  
           // Update progress if not already completed
-          if (progress && !progress.completed) {
+          if (progress) {
             try {
+              // Update progress and completion status
               await axios.post(`${backendUrl}/api/progress/`, {
                 userId,
                 videoId: video._id,
+                progress: currentTime, // Send the watched progress
                 completed: true
               });
+              
               // Update local progress
-              updateUserProgress(video._id, { completed: true });
+              updateUserProgress(video._id, { progress: currentTime, completed: true });
               console.log('User progress updated');
             } catch (error) {
               console.error('Error updating user progress:', error);
@@ -79,10 +118,10 @@ export const VidPage = () => {
         });
       }
     };
-
+  
     checkCompletion();
   }, [userProgress, video, userId, updateUserProgress]);
-
+    
   return (
     <>
       <Navbar title={video.title} order={video.order} />
