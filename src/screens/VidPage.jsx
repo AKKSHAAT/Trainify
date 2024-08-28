@@ -8,9 +8,6 @@ import VideoJS from '../components/VideoJs';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-// TODO:make video work 
-// TODO:make progress work
-// TODO:add video.js ffs get this done by 1
 
 export const VidPage = () => {
   const [video, setVideo] = useState({}); 
@@ -22,7 +19,6 @@ export const VidPage = () => {
   const VideoPlayerOptions = {
     controls: true,
     responsive: true,
-    fluid: true,
     sources: [
       {
         src: videoLink,
@@ -33,14 +29,10 @@ export const VidPage = () => {
 
   const handlePlayerReady = (player) => {
     playerRef.current = player;
-
-    // You can handle player events here, for example:
     player.on('waiting', () => {
-      videojs.log('player is waiting');
     });
 
     player.on('dispose', () => {
-      videojs.log('player will dispose');
     });
   };
 
@@ -48,28 +40,26 @@ export const VidPage = () => {
     axios
       .get(`${backendUrl}/api/videos/${id}`)
       .then((res) => {
-        setVideoLink(`${backendUrl}/api/videos/stream/Video1.mp4`);
         setVideo(res.data)
-        console.log(videoLink);
+        console.log(`video:: ${video}`);
       })
       .catch((err) => {
         setError(err.message);
       });
   }, [id]);
 
+  useEffect(()=>{
+    setVideoLink(`${backendUrl}/api/videos/stream/${video.fileUrl}`);
+  }, [video])
+
   
   return (
     <>
-      <Navbar />
+      <Navbar title={video.title} order={video.order}/>
       <div className="flex w-full h-full">
         <VideoList />
         <div className="flex-1 p-4 ">
-          <h1 className=" text-2xl font-bold text-white mb-4">
-            <span>{video.order + ' '}</span>
-            {video.title}
-            {videoLink}
-          </h1>
-          { videoLink ? (
+          { videoLink ? ( 
               <VideoJS 
                 options={VideoPlayerOptions}
                 onReady={handlePlayerReady}

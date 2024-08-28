@@ -5,40 +5,65 @@ import { VideoList } from './VideoList';
 import { Login } from './Login';
 import { Navbar } from './Navbar';
 
+import useStore from '../store/useStore.js';
+
 export const Home = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   
   const [user, setUser] = useState(null); 
+  // const [userProgress, setUserProgress] = useState(null); 
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const { setUserProgress, userProgress } = useStore((state) => ({
+    setUserProgress: state.setUserProgress,
+    userProgress: state.userProgress,
+  }));
+
   useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+
     function fetchUser() {
-      const userId = localStorage.getItem('userId');
-      const token = localStorage.getItem('token');
-      
-      if (userId && token) {
-        axios.get(`${backendUrl}/api/user/${userId}`, {
+      axios.get(`${backendUrl}/api/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        setUser(response.data);
+      })
+      .catch(err => {
+        console.error(err);
+        localStorage.removeItem('userId');
+        localStorage.removeItem('token'); 
+        navigate('/login'); 
+      });
+    }
+
+    const fetchUserProgress = async()=>{
+      try {
+        const response = await axios.get(`${backendUrl}/api/progress/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
-        })
-        .then(response => {
-          setUser(response.data);
-        })
-        .catch(err => {
-          console.error(`Error fetching user data: ${err}`);
-          setError("Failed to fetch user data. Please try again.");
-          localStorage.removeItem('userId');
-          localStorage.removeItem('token'); 
-          navigate('/login'); 
         });
-      } else {
-        setError("User not logged in. Please log in.");
-        navigate('/login'); 
+    
+        setUserProgress(response.data);
+      } catch (err) {
+        console.error("Error fetching user progress:", err.message);
+        setError(err.message);
       }
     }
-    fetchUser();
+
+
+    if (userId && token) {
+      fetchUser();
+      fetchUserProgress();
+    } else {
+      navigate('/login'); 
+    }
+
   }, [navigate, backendUrl]); 
 
   return (
@@ -46,9 +71,9 @@ export const Home = () => {
       <Navbar />
       {user ? (
         <div className='flex'>
-          <VideoList />
+          <VideoList/>
           <div className='mx-auto text-center p-8 text-8xl font-bold text-white text-wrap'>
-            Welcome to Trainify!
+            Welcome to <span className="text-blue-600">Trainify!</span>
             <div className='p-4 text-4xl font-bold text-white mb-4'>
               <h1> Hello  
                 <span className='text-[#444972]'>

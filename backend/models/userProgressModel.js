@@ -1,31 +1,37 @@
 import mongoose from 'mongoose';
 
-const userProgressSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+// Define a schema for individual video progress
+const videoProgressSchema = new mongoose.Schema({
+  videoId: {
+    type: mongoose.Schema.Types.ObjectId, // Reference to the video
+    ref: 'Video',
     required: true,
   },
-  video: {
-    videoId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-    watchedDuration: {
-      type: Number,
-      default: 0,
-    },
-    completed: {
-      type: Boolean,
-      default: false,
-    },
-    lastWatchedAt: {
-      type: Date,
-      default: Date.now,
-    }
+  progress: {
+    type: Number, // Stores the progress value (e.g., percentage of video watched)
+    default: 0,
+  },
+  completed: {
+    type: Boolean, // Stores whether the video has been completed
+    default: false,
+  },
+  lastWatchedAt: {
+    type: Date, // Tracks the last time this video was watched
+    default: Date.now,
   }
 });
 
+// Define the main user progress schema
+const userProgressSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId, // Reference to the user
+    ref: 'User',
+    required: true,
+  },
+  videos: [videoProgressSchema] // Array of video progress objects
+});
+
+// Create a model from the schema
 const UserProgress = mongoose.model('UserProgress', userProgressSchema);
 
-export {UserProgress};
+export { UserProgress };

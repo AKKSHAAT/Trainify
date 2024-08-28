@@ -30,7 +30,7 @@ router.get('/stream/:fileName', (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    console.log("pingged");
+    console.log("pingged videos:get");
     const vids = await Video.find({});
     res.send(vids);   
   } catch (error) {

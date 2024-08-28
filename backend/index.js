@@ -12,7 +12,7 @@ app.use(cors())
 app.use(express.json()); 
 app.use('/api/videos', videoRoutes); 
 app.use('/api/user', userRoutes); 
-app.use('/api/user-progress',userProgressRoute); 
+app.use('/api/progress',userProgressRoute); 
 
 const port = process.env.PORT || 6969;
 app.listen(port, () => {
