@@ -13,7 +13,7 @@ export const VideoList = () => {
   const userProgress = useStore((state) => state.userProgress);
 
   useEffect(() => {
-    const fetchVideos = async () => { 
+    const fetchVideos = async () => {
       try {
         const response = await axios.get(`${backendUrl}/api/videos/`);
         setVideos(response.data);
@@ -45,7 +45,7 @@ export const VideoList = () => {
           return (
             <li key={video._id} className="bg-[#1c2431] m-2 p-4 rounded-lg">
               {isLocked ? (
-                <div>
+                <div className='cursor-no-drop'>
                   <h1 className="font-bold text-white">{video.title}</h1>
                   <div className="text-[#92acc9] text-sm">
                     <p>{video.description.slice(0, 40) + ' ...'}</p>

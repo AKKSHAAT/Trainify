@@ -3,6 +3,7 @@ import { User } from '../models/userModel.js';
 import { Video } from '../models/videoModel.js';
 import  {UserProgress} from '../models/userProgressModel.js';
 import { authMiddleware } from '../routes/middleware.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -53,22 +54,51 @@ router.get('/:userId', authMiddleware, async (req, res) => {
 });
 
 
-router.post('/vIds',async (req, res)=>{
-try {
-    const { userId, videoId, completed } = req.body; 
-    const progress = new UserProgress({
-        userId,
-        video: {
-        videoId,
-        completed: completed || false, 
-        },
-    });
+router.post('/', async (req, res) => {
+  const { userId, videoId, completed, progress } = req.body;
 
-    const result = await progress.save();
-    res.send(result);
-    } catch (err) {
-    res.status(500).send(err.message);
+  try {
+    console.log("completed:", completed);
+
+    // Use updateOne to directly update the video in the array
+    const result = await UserProgress.updateOne(
+        {
+            userId: userId,
+            'videos.videoId': videoId
+        },
+        {
+            $set: {
+                'videos.$.completed': completed
+            }
+        }
+    );
+
+    // Check if the update modified any documents
+    if (result.nModified === 0) {
+        // If no progress is found or no modification occurred, create a new progress entry
+        const newProgress = new UserProgress({
+            userId,
+            videos: [{ videoId, completed }]
+        });
+
+        await newProgress.save()
+            .then((savedProgress) => {
+                console.log('New progress created:', savedProgress);
+            })
+            .catch(err => {
+                console.log('Error creating progress:', err);
+            });
+    } else {
+        console.log('Progress updated successfully');
     }
+    res.status(200).json({ message: 'Progress updated successfully' });
+  } catch (err) {
+      console.log('Catch block error:', err);
+      res.status(500).json({ error: 'Failed to update progress' });
+}
+
+
 });
+
 
 export default router;
